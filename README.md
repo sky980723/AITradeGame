@@ -1,103 +1,92 @@
-# AI Crypto Trading Platform
+# AI 加密货币交易平台
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Flask](https://img.shields.io/badge/flask-3.0+-green.svg)](https://flask.palletsprojects.com/)
 
-A web-based cryptocurrency trading simulation platform with AI-powered decision making.
+基于 Web 的加密货币交易模拟平台，采用 AI 驱动的决策系统。
 
-## Features
+## 功能特性
 
-- Real-time crypto market data integration
-- AI-driven trading strategies using LLM APIs
-- Portfolio management with leverage support
-- Interactive dashboard with live charts
-- Trade history and performance tracking
+- 实时加密货币市场数据集成
+- 基于大语言模型的 AI 交易策略
+- 支持杠杆的投资组合管理
+- 实时图表的交互式仪表板
+- 交易历史与性能跟踪
 
-## Tech Stack
+## 技术栈
 
-- Backend: Python/Flask
-- Frontend: Vanilla JS, ECharts
-- Database: SQLite
-- APIs: OpenAI-compatible (OpenAI, DeepSeek, Claude via OpenRouter)
+- 后端：Python/Flask
+- 前端：原生 JavaScript、ECharts
+- 数据库：SQLite
+- AI 接口：OpenAI 兼容格式（支持 OpenAI、DeepSeek、Claude 等）
 
-## Installation
+## 安装
 
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
 
-Access at `http://localhost:5000`
+访问地址：`http://localhost:5000`
 
-## Configuration
+## 配置
 
-Add trading models through the web interface:
-- Model name
-- API key
-- API endpoint
-- Model identifier
-- Initial capital
+通过 Web 界面添加交易模型：
+- 模型名称
+- API 密钥
+- API 地址
+- 模型标识符
+- 初始资金
 
-## Project Structure
+## 项目结构
 
 ```
 trading_bot/
-├── app.py              # Flask application
-├── trading_engine.py   # Trading logic
-├── ai_trader.py        # AI integration
-├── database.py         # Data layer
-├── market_data.py      # Market API
-├── static/             # CSS/JS
-├── templates/          # HTML
-└── requirements.txt
+├── app.py              # Flask 应用主程序
+├── trading_engine.py   # 交易逻辑引擎
+├── ai_trader.py        # AI 集成模块
+├── database.py         # 数据层
+├── market_data.py      # 市场数据接口
+├── static/             # CSS/JS 资源
+├── templates/          # HTML 模板
+└── requirements.txt    # Python 依赖
 ```
 
-## API Support
+## 支持的 AI 模型
 
-Compatible with OpenAI-format APIs:
+兼容 OpenAI 格式的 API：
 - OpenAI (gpt-4, gpt-3.5-turbo)
 - DeepSeek (deepseek-chat)
-- Claude (via OpenRouter)
+- Claude (通过 OpenRouter)
 
-## Usage
+## 使用方法
 
-1. Start the server
-2. Add an AI model configuration
-3. System starts trading automatically
-4. Monitor portfolio in real-time
+1. 启动服务器
+2. 添加 AI 模型配置
+3. 系统自动开始交易
+4. 实时监控投资组合
 
-## Notes
+## 注意事项
 
-- This is a simulation platform (paper trading only)
-- Requires valid API keys for AI models
-- Internet connection needed for market data
+- 这是一个模拟交易平台（仅限纸面交易）
+- 需要有效的 AI 模型 API 密钥
+- 需要互联网连接以获取市场数据
 
-## Screenshots
+## 贡献
 
-![Dashboard](docs/images/dashboard.png)
+欢迎贡献代码！请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Documentation
+## 许可证
 
-- [Quick Start Guide](docs/QUICKSTART.md)
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
-- [FAQ](docs/FAQ.md)
+MIT - 详见 [LICENSE](LICENSE) 文件
 
-## Contributing
+## 致谢
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
-
-## License
-
-MIT - see [LICENSE](LICENSE) file for details
-
-## Acknowledgments
-
-- Market data from CoinGecko API
-- Charts powered by ECharts
-- AI integration via OpenAI-compatible APIs
+- 市场数据来自 CoinGecko API
+- 图表由 ECharts 驱动
+- AI 集成基于 OpenAI 兼容接口
 
 ---
 
-**Disclaimer**: This is a simulation platform for educational purposes only. Not financial advice.
+**免责声明**：本平台仅用于教育和模拟目的，不构成任何投资建议。
