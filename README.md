@@ -5,7 +5,7 @@
 
 基于 Web 的加密货币交易模拟平台，采用 AI 驱动的决策系统。
 
-在线版（维护中）：https://aitradegame.com/ 
+在线版（加了排行榜功能）：https://aitradegame.com/ 
 
 ## 功能特性
 
