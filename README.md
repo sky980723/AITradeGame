@@ -5,7 +5,7 @@
 
 基于 Web 的加密货币交易模拟平台，采用 AI 驱动的决策系统。
 
-在线版（维护中）：https://aitradegame.com/ 
+在线版（加了排行榜功能）：https://aitradegame.com/ 
 
 ## 功能特性
 
@@ -76,18 +76,6 @@ trading_bot/
 
 ## 贡献
 
-欢迎贡献代码！请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## 许可证
-
-MIT - 详见 [LICENSE](LICENSE) 文件
-
-## 致谢
-
-- 市场数据来自 CoinGecko API
-- 图表由 ECharts 驱动
-- AI 集成基于 OpenAI 兼容接口
-
----
+欢迎贡献代码！
 
 **免责声明**：本平台仅用于教育和模拟目的，不构成任何投资建议。
