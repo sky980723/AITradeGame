@@ -234,6 +234,19 @@ body {
     color: var(--text-3);
 }
 
+.model-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.model-edit {
+    color: var(--primary);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
 .model-delete {
     color: var(--danger);
     cursor: pointer;
@@ -241,7 +254,8 @@ body {
     transition: opacity 0.2s;
 }
 
-.model-item:hover .model-delete {
+.model-item:hover .model-delete,
+.model-item:hover .model-edit {
     opacity: 1;
 }
 
@@ -633,4 +647,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-3);
 }
-

@@ -142,6 +142,57 @@ class Database:
         conn.commit()
         conn.close()
     
+    def update_model(
+        self,
+        model_id: int,
+        name: Optional[str] = None,
+        api_key: Optional[str] = None,
+        api_url: Optional[str] = None,
+        model_name: Optional[str] = None,
+        initial_capital: Optional[float] = None
+    ) -> bool:
+        """Update model settings"""
+        fields = []
+        values = []
+        
+        if name is not None:
+            fields.append('name = ?')
+            values.append(name)
+        if api_key is not None:
+            fields.append('api_key = ?')
+            values.append(api_key)
+        if api_url is not None:
+            fields.append('api_url = ?')
+            values.append(api_url)
+        if model_name is not None:
+            fields.append('model_name = ?')
+            values.append(model_name)
+        if initial_capital is not None:
+            fields.append('initial_capital = ?')
+            values.append(initial_capital)
+        
+        if not fields:
+            return False
+        
+        values.append(model_id)
+        
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            f"UPDATE models SET {', '.join(fields)} WHERE id = ?",
+            tuple(values)
+        )
+        conn.commit()
+        
+        if cursor.rowcount == 0:
+            cursor.execute('SELECT 1 FROM models WHERE id = ?', (model_id,))
+            exists = cursor.fetchone() is not None
+            conn.close()
+            return exists
+        
+        conn.close()
+        return True
+    
     # ============ Portfolio Management ============
     
     def update_position(self, model_id: int, coin: str, quantity: float, 
@@ -328,4 +379,3 @@ class Database:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
-

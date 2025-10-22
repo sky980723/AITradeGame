@@ -1,6 +1,9 @@
 class TradingApp {
     constructor() {
         this.currentModelId = null;
+        this.models = [];
+        this.isEditing = false;
+        this.editModelId = null;
         this.chart = null;
         this.refreshIntervals = {
             market: null,
@@ -33,6 +36,7 @@ class TradingApp {
         try {
             const response = await fetch('/api/models');
             const models = await response.json();
+            this.models = models;
             this.renderModels(models);
 
             if (models.length > 0 && !this.currentModelId) {
@@ -57,9 +61,14 @@ class TradingApp {
                 <div class="model-name">${model.name}</div>
                 <div class="model-info">
                     <span>${model.model_name}</span>
-                    <span class="model-delete" onclick="event.stopPropagation(); app.deleteModel(${model.id})">
-                        <i class="bi bi-trash"></i>
-                    </span>
+                    <div class="model-actions">
+                        <span class="model-edit" onclick="event.stopPropagation(); app.editModel(${model.id})">
+                            <i class="bi bi-pencil-square"></i>
+                        </span>
+                        <span class="model-delete" onclick="event.stopPropagation(); app.deleteModel(${model.id})">
+                            <i class="bi bi-trash"></i>
+                        </span>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -326,44 +335,106 @@ class TradingApp {
         document.getElementById(`${tabName}Tab`).classList.add('active');
     }
 
-    showModal() {
+    showModal(model = null) {
+        const modalTitle = document.querySelector('#addModelModal .modal-header h3');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (model) {
+            this.isEditing = true;
+            this.editModelId = model.id;
+            modalTitle.textContent = '编辑交易模型';
+            submitBtn.textContent = '保存修改';
+            this.setFormValues({
+                name: model.name,
+                api_key: model.api_key,
+                api_url: model.api_url,
+                model_name: model.model_name,
+                initial_capital: model.initial_capital
+            });
+        } else {
+            this.isEditing = false;
+            this.editModelId = null;
+            modalTitle.textContent = '添加交易模型';
+            submitBtn.textContent = '确认添加';
+            this.setFormValues();
+        }
+
         document.getElementById('addModelModal').classList.add('show');
     }
 
     hideModal() {
         document.getElementById('addModelModal').classList.remove('show');
+        this.isEditing = false;
+        this.editModelId = null;
+        this.setFormValues();
     }
 
     async submitModel() {
-        const data = {
-            name: document.getElementById('modelName').value,
-            api_key: document.getElementById('apiKey').value,
-            api_url: document.getElementById('apiUrl').value,
-            model_name: document.getElementById('modelIdentifier').value,
-            initial_capital: parseFloat(document.getElementById('initialCapital').value)
-        };
+        const name = document.getElementById('modelName').value.trim();
+        const apiKey = document.getElementById('apiKey').value.trim();
+        const apiUrl = document.getElementById('apiUrl').value.trim();
+        const modelIdentifier = document.getElementById('modelIdentifier').value.trim();
+        const initialCapitalValue = document.getElementById('initialCapital').value;
 
-        if (!data.name || !data.api_key || !data.api_url || !data.model_name) {
+        if (!name || !apiKey || !apiUrl || !modelIdentifier) {
             alert('请填写所有必填字段');
             return;
         }
 
+        const payload = {
+            name,
+            api_key: apiKey,
+            api_url: apiUrl,
+            model_name: modelIdentifier
+        };
+
+        if (initialCapitalValue !== '') {
+            const parsedCapital = parseFloat(initialCapitalValue);
+            if (!Number.isNaN(parsedCapital)) {
+                payload.initial_capital = parsedCapital;
+            }
+        }
+
+        const url = this.isEditing && this.editModelId
+            ? `/api/models/${this.editModelId}`
+            : '/api/models';
+        const method = this.isEditing && this.editModelId ? 'PUT' : 'POST';
+
+        if (this.isEditing && !this.editModelId) {
+            console.error('缺少待编辑的模型ID');
+            return;
+        }
+
         try {
-            const response = await fetch('/api/models', {
-                method: 'POST',
+            const response = await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             });
 
             if (response.ok) {
                 this.hideModal();
-                this.loadModels();
-                this.clearForm();
+                await this.loadModels();
+                if (this.currentModelId) {
+                    await this.loadModelData();
+                }
+            } else {
+                const error = await response.json();
+                alert(`操作失败: ${error.error || '未知错误'}`);
             }
         } catch (error) {
-            console.error('Failed to add model:', error);
-            alert('添加模型失败');
+            console.error('Failed to submit model:', error);
+            alert('操作失败');
         }
+    }
+
+    editModel(modelId) {
+        const model = this.models.find(item => item.id === modelId);
+        if (!model) {
+            console.warn('未找到指定模型，无法编辑');
+            return;
+        }
+        this.showModal(model);
     }
 
     async deleteModel(modelId) {
@@ -386,11 +457,20 @@ class TradingApp {
     }
 
     clearForm() {
-        document.getElementById('modelName').value = '';
-        document.getElementById('apiKey').value = '';
-        document.getElementById('apiUrl').value = '';
-        document.getElementById('modelIdentifier').value = '';
-        document.getElementById('initialCapital').value = '100000';
+        this.setFormValues();
+        this.isEditing = false;
+        this.editModelId = null;
+    }
+
+    setFormValues(values = {}) {
+        document.getElementById('modelName').value = values.name || '';
+        document.getElementById('apiKey').value = values.api_key || '';
+        document.getElementById('apiUrl').value = values.api_url || '';
+        document.getElementById('modelIdentifier').value = values.model_name || '';
+        const capital = values.initial_capital !== undefined && values.initial_capital !== null
+            ? values.initial_capital
+            : 100000;
+        document.getElementById('initialCapital').value = capital;
     }
 
     async refresh() {

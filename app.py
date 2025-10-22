@@ -55,6 +55,79 @@ def add_model():
     
     return jsonify({'id': model_id, 'message': 'Model added successfully'})
 
+@app.route('/api/models/<int:model_id>', methods=['PUT'])
+def update_model(model_id):
+    data = request.json or {}
+    
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    
+    name = data.get('name')
+    api_key = data.get('api_key')
+    api_url = data.get('api_url')
+    model_name = data.get('model_name')
+    initial_capital = data.get('initial_capital')
+    
+    if name is not None:
+        name = name.strip()
+        if not name:
+            return jsonify({'error': 'name cannot be empty'}), 400
+    if api_key is not None:
+        api_key = api_key.strip()
+        if not api_key:
+            return jsonify({'error': 'api_key cannot be empty'}), 400
+    if api_url is not None:
+        api_url = api_url.strip()
+        if not api_url:
+            return jsonify({'error': 'api_url cannot be empty'}), 400
+    if model_name is not None:
+        model_name = model_name.strip()
+        if not model_name:
+            return jsonify({'error': 'model_name cannot be empty'}), 400
+    
+    if initial_capital is not None:
+        try:
+            initial_capital = float(initial_capital)
+        except ValueError:
+            return jsonify({'error': 'initial_capital must be a number'}), 400
+    
+    if not any(
+        value is not None
+        for value in (name, api_key, api_url, model_name, initial_capital)
+    ):
+        return jsonify({'error': 'No fields provided to update'}), 400
+    
+    try:
+        updated = db.update_model(
+            model_id,
+            name=name,
+            api_key=api_key,
+            api_url=api_url,
+            model_name=model_name,
+            initial_capital=initial_capital
+        )
+        
+        if not updated:
+            if not db.get_model(model_id):
+                return jsonify({'error': 'Model not found'}), 404
+            return jsonify({'error': 'No changes were applied'}), 400
+        
+        updated_model = db.get_model(model_id)
+        if model_id in trading_engines and updated_model:
+            trading_engines[model_id].ai_trader = AITrader(
+                api_key=updated_model['api_key'],
+                api_url=updated_model['api_url'],
+                model_name=updated_model['model_name']
+            )
+            print(f"[INFO] Model {model_id} ({updated_model['name']}) reloaded with new settings")
+        elif updated_model:
+            print(f"[INFO] Model {model_id} ({updated_model['name']}) updated")
+        
+        return jsonify({'message': 'Model updated successfully'})
+    except Exception as e:
+        print(f"[ERROR] Update model {model_id} failed: {e}")
+        return jsonify({'error': str(e)}), 500
+    
 @app.route('/api/models/<int:model_id>', methods=['DELETE'])
 def delete_model(model_id):
     try:
